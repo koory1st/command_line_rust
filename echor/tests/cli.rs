@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::fs;
 
 use assert_cmd::Command;
@@ -5,7 +6,7 @@ use predicates::prelude::*;
 
 const COMMAND_NAME: &'static str = "echor";
 
-type TestResult = Result<(), Box<dyn std::error::Error>>;
+type TestResult = Result<(), Box<dyn Error>>;
 
 #[test]
 fn dies_no_args() -> TestResult {
@@ -27,23 +28,29 @@ fn runs() -> TestResult {
 
 #[test]
 fn hello1() -> TestResult {
-    let outfile = "tests/expected/hello1.txt";
-    let expected = fs::read_to_string(outfile)?;
-    let mut command = Command::cargo_bin(COMMAND_NAME)?;
-    command.arg("Hello there").assert().success().stdout(expected);
-
-    Ok(())
+    run(&["Hello there"], "tests/expected/hello1.txt")
 }
 
 #[test]
 fn hello2() -> TestResult {
-    let outfile = "tests/expected/hello2.txt";
+    run(&["Hello", "there"], "tests/expected/hello2.txt")
+}
+
+#[test]
+fn hello1_no_newline() -> TestResult {
+    run(&["Hello  there", "-n"], "tests/expected/hello1.n.txt")
+}
+
+#[test]
+fn hello2_no_newline() -> TestResult {
+    run(&["-n", "Hello", "there"], "tests/expected/hello2.n.txt")
+}
+
+
+fn run(args: &[&str], outfile: &str) -> Result<(), Box<dyn Error>> {
     let expected = fs::read_to_string(outfile)?;
     let mut command = Command::cargo_bin(COMMAND_NAME)?;
-    command.args(vec!["Hello", "there"])
-        .assert()
-        .success()
-        .stdout(expected);
+    command.args(args).assert().success().stdout(expected);
 
     Ok(())
 }
