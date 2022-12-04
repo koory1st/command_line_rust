@@ -20,9 +20,11 @@ fn runs() {
 }
 
 #[test]
-fn hello1() {
+fn hello1() -> Result<(), Box<dyn std::error::Error>> {
     let outfile = "tests/expected/hello1.txt";
-    let expected = fs::read_to_string(outfile).unwrap();
-    let mut command = Command::cargo_bin(COMMAND_NAME).unwrap();
+    let expected = fs::read_to_string(outfile)?;
+    let mut command = Command::cargo_bin(COMMAND_NAME)?;
     command.arg("Hello there").assert().success().stdout(expected);
+
+    Ok(())
 }
