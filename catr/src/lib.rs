@@ -24,7 +24,7 @@ pub fn get_args() -> MyResult<Config> {
                 .value_name("FILE")
                 .help("Input File(s)")
                 .default_value("-")
-                .action(ArgAction::Append)
+                .action(ArgAction::Append),
         )
         .arg(
             Arg::new("number")
@@ -32,18 +32,22 @@ pub fn get_args() -> MyResult<Config> {
                 .short('n')
                 .long("number")
                 .action(ArgAction::SetTrue)
-                .conflicts_with("number_nonblank")
+                .conflicts_with("number_nonblank"),
         )
         .arg(
             Arg::new("number_nonblank")
                 .help("Number non-blank lines")
                 .short('b')
                 .long("number-nonblank")
-                .action(ArgAction::SetTrue)
+                .action(ArgAction::SetTrue),
         )
         .get_matches();
 
-    let vec = matches.get_many::<String>("files").unwrap_or_default().map(|v| v.to_owned()).collect::<Vec<_>>();
+    let vec = matches
+        .get_many::<String>("files")
+        .unwrap_or_default()
+        .map(|v| v.to_owned())
+        .collect::<Vec<_>>();
     let number = matches.get_one::<bool>("number").unwrap().clone();
     let number_noblank = matches.get_one::<bool>("number_nonblank").unwrap().clone();
     Ok(Config {
@@ -55,32 +59,48 @@ pub fn get_args() -> MyResult<Config> {
 
 pub fn run(config: Config) -> MyResult<()> {
     for file_name in config.files {
-        match open(&file_name) {
-            Ok(mut buf) => {
-                let mut line_no = 0;
-                loop {
-                    line_no += 1;
-                    let mut result = String::new();
-                    match buf.read_line(&mut result) {
-                        Ok(count) => {
-                            if count == 0 {
-                                break;
-                            }
-                            if config.number_lines {
-                                print!("{:>5}\t{}", line_no, result);
-                            } else {
-                                print!("{}", result);
-                            }
-                        }
-                        Err(err) => {
-                            eprintln!("error, {}", err);
-                            break;
-                        }
-                    }
-                }
+        let f = open(&file_name)?;
+
+        let reader = BufReader::new(f);
+
+        let mut line_no = 0;
+        for line in reader.lines() {
+            let line = line?;
+
+            if !config.number_noblank_lines || line.len() > 0 {
+                line_no += 1;
             }
-            Err(err) => eprintln!("Failed to open {}: {}", file_name, err)
+
+            if (config.number_lines || config.number_noblank_lines) && line.len() > 0 {
+                println!("{:>5}\t{}", line_no, line);
+            } else {
+                println!("{}", line);
+            }
         }
+
+        // match open(&file_name) {
+        //     Ok(mut buf) => loop {
+        //         line_no += 1;
+        //         let mut result = String::new();
+        //         match buf.read_line(&mut result) {
+        //             Ok(count) => {
+        //                 if count == 0 {
+        //                     break;
+        //                 }
+        //                 if config.number_lines {
+        //                     print!("{:>5}\t{}", line_no, result);
+        //                 } else {
+        //                     print!("{}", result);
+        //                 }
+        //             }
+        //             Err(err) => {
+        //                 eprintln!("error, {}", err);
+        //                 break;
+        //             }
+        //         }
+        //     },
+        //     Err(err) => eprintln!("Failed to open {}: {}", file_name, err),
+        // }
     }
     println!();
     Ok(())
@@ -89,7 +109,6 @@ pub fn run(config: Config) -> MyResult<()> {
 fn open(file_name: &str) -> MyResult<Box<dyn BufRead>> {
     match file_name {
         "-" => Ok(Box::new(BufReader::new(io::stdin()))),
-        _ => Ok(Box::new(BufReader::new(File::open(file_name)?)))
+        _ => Ok(Box::new(BufReader::new(File::open(file_name)?))),
     }
 }
-
