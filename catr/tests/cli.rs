@@ -9,9 +9,9 @@ const PRG: &str = "catr";
 
 #[test]
 fn usage() -> TestResult {
-    for flg in &["-h", "--help"] {
+    for flag in &["-h", "--help"] {
         Command::cargo_bin(PRG)?
-            .arg(flg)
+            .arg(flag)
             .assert()
             .stdout(predicate::str::contains("Usage"));
     }
