@@ -77,32 +77,7 @@ pub fn run(config: Config) -> MyResult<()> {
                 println!("{}", line);
             }
         }
-
-        // match open(&file_name) {
-        //     Ok(mut buf) => loop {
-        //         line_no += 1;
-        //         let mut result = String::new();
-        //         match buf.read_line(&mut result) {
-        //             Ok(count) => {
-        //                 if count == 0 {
-        //                     break;
-        //                 }
-        //                 if config.number_lines {
-        //                     print!("{:>5}\t{}", line_no, result);
-        //                 } else {
-        //                     print!("{}", result);
-        //                 }
-        //             }
-        //             Err(err) => {
-        //                 eprintln!("error, {}", err);
-        //                 break;
-        //             }
-        //         }
-        //     },
-        //     Err(err) => eprintln!("Failed to open {}: {}", file_name, err),
-        // }
     }
-    println!();
     Ok(())
 }
 

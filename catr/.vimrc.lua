@@ -13,4 +13,17 @@ dap.configurations.rust = {
 			"tests/inputs/fox.txt",
 		},
 	},
+	{
+		name = "Launch No File",
+		type = "codelldb",
+		request = "launch",
+		program = function()
+			return vim.fn.getcwd() .. "/target/debug/catr"
+		end,
+		cwd = "${workspaceFolder}",
+		stopOnEntry = false,
+		args = {
+			"abdeeeee",
+		},
+	},
 }
