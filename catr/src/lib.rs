@@ -78,7 +78,7 @@ pub fn run(config: Config) -> MyResult<()> {
             }
 
             if (config.number_lines || config.number_noblank_lines) && line.len() > 0 {
-                println!("{:>5}\t{}", line_no, line);
+                println!("{:>6}\t{}", line_no, line);
             } else {
                 println!("{}", line);
             }
