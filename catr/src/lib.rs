@@ -59,8 +59,14 @@ pub fn get_args() -> MyResult<Config> {
 
 pub fn run(config: Config) -> MyResult<()> {
     for file_name in config.files {
-        let f = open(&file_name)?;
+        let f_result = open(&file_name);
 
+        if let Err(e) = open(&file_name) {
+            eprintln!("{}: {}", file_name, e);
+            return Ok(());
+        }
+
+        let f = f_result.unwrap();
         let reader = BufReader::new(f);
 
         let mut line_no = 0;
