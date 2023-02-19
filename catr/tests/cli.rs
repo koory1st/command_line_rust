@@ -7,6 +7,7 @@ use rand::{distributions::Alphanumeric, Rng};
 type TestResult = Result<(), Box<dyn Error>>;
 
 const PRG: &str = "catr";
+const EMPTY: &str = "tests/inputs/empty.txt";
 
 #[test]
 fn usage() -> TestResult {
@@ -43,4 +44,19 @@ fn skips_bad_file() -> TestResult {
         .stderr(predicate::str::is_match(expected)?);
 
     Ok(())
+}
+
+fn run(args: &[&str], expected_file: &str) -> TestResult {
+    let expected = fs::read_to_string(expected_file)?;
+    Command::cargo_bin(PRG)?
+        .args(args)
+        .assert()
+        .success()
+        .stdout(expected);
+    Ok(())
+}
+
+#[test]
+fn empty() -> TestResult {
+    run(&[EMPTY], "tests/expected/empty.txt.out")
 }
