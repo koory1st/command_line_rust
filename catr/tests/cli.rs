@@ -8,6 +8,9 @@ type TestResult = Result<(), Box<dyn Error>>;
 
 const PRG: &str = "catr";
 const EMPTY: &str = "tests/inputs/empty.txt";
+const FOX: &str = "tests/inputs/fox.txt";
+const SPIDERS: &str = "tests/inputs/spiders.txt";
+const BUSTLE: &str = "tests/inputs/the-bustle.txt";
 
 #[test]
 fn usage() -> TestResult {
@@ -59,4 +62,63 @@ fn run(args: &[&str], expected_file: &str) -> TestResult {
 #[test]
 fn empty() -> TestResult {
     run(&[EMPTY], "tests/expected/empty.txt.out")
+}
+#[test]
+fn empty_n() -> TestResult {
+    run(&["-n", EMPTY], "tests/expected/empty.txt.n.out")
+}
+#[test]
+fn empty_b() -> TestResult {
+    run(&["-b", EMPTY], "tests/expected/empty.txt.b.out")
+}
+
+#[test]
+fn fox() -> TestResult {
+    run(&[FOX], "tests/expected/fox.txt.out")
+}
+#[test]
+fn fox_n() -> TestResult {
+    run(&["-n", FOX], "tests/expected/fox.txt.n.out")
+}
+#[test]
+fn fox_b() -> TestResult {
+    run(&["-b", FOX], "tests/expected/fox.txt.b.out")
+}
+
+#[test]
+fn spiders() -> TestResult {
+    run(&[SPIDERS], "tests/expected/spiders.txt.out")
+}
+#[test]
+fn spiders_n() -> TestResult {
+    run(&["-n", SPIDERS], "tests/expected/spiders.txt.n.out")
+}
+#[test]
+fn spiders_b() -> TestResult {
+    run(&["-b", SPIDERS], "tests/expected/spiders.txt.b.out")
+}
+#[test]
+fn bustle() -> TestResult {
+    run(&[BUSTLE], "tests/expected/the-bustle.txt.out")
+}
+#[test]
+fn bustle_n() -> TestResult {
+    run(&["-n", BUSTLE], "tests/expected/the-bustle.txt.n.out")
+}
+#[test]
+fn bustle_b() -> TestResult {
+    run(&["-b", BUSTLE], "tests/expected/the-bustle.txt.b.out")
+}
+
+#[test]
+fn all() -> TestResult {
+    run(&[FOX, SPIDERS, BUSTLE], "tests/expected/all.out")
+}
+#[test]
+fn all_n() -> TestResult {
+    run(&["-n", FOX, SPIDERS, BUSTLE], "tests/expected/all.n.out")
+}
+#[test]
+fn all_b() -> TestResult {
+    run(&["-b", FOX, SPIDERS, BUSTLE], "tests/expected/all.b.out")
 }
