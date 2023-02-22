@@ -45,14 +45,23 @@ pub fn get_args() -> MyResult<Config> {
         .map(|v| v.to_owned())
         .collect::<Vec<_>>();
 
-    // let lines = matches
-    // .get_one("lines")
-    //     .ma
+    let lines = matches
+        .get_one::<String>("lines")
+        .map(|v| parse_positive_int(v))
+        .transpose()
+        .map_err(|e| format!("illegal line count -- {}", e))?
+        .unwrap();
+
+    let bytes = matches
+        .get_one::<String>("bytes")
+        .map(|v| parse_positive_int(v))
+        .transpose()
+        .map_err(|e| format!("illegal bytes count -- {}", e))?;
 
     Ok(Config {
-        files: files,
-        lines: 1,
-        bytes: Some(1),
+        files,
+        lines,
+        bytes,
     })
 }
 
