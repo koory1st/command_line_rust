@@ -1,4 +1,8 @@
-use std::error::Error;
+use std::{
+    error::Error,
+    fs::File,
+    io::{self, BufRead, BufReader},
+};
 
 use clap::{Arg, ArgAction, Command};
 
@@ -66,7 +70,12 @@ pub fn get_args() -> MyResult<Config> {
 }
 
 pub fn run(args: Config) -> MyResult<()> {
-    dbg!(&args);
+    for filename in args.files {
+        match open(&filename) {
+            Err(e) => eprintln!("{}: {}", filename, e),
+            Ok(_) => println!("Opened {}", filename),
+        }
+    }
     Ok(())
 }
 
@@ -99,4 +108,11 @@ fn test_parse_positive_int() {
     let res = parse_positive_int("0");
     assert!(res.is_err());
     assert_eq!(res.unwrap_err().to_string(), "0".to_owned());
+}
+
+fn open(filename: &str) -> MyResult<Box<dyn BufRead>> {
+    match filename {
+        "-" => Ok(Box::new(BufReader::new(io::stdin()))),
+        _ => Ok(Box::new(BufReader::new(File::open(filename)?))),
+    }
 }
