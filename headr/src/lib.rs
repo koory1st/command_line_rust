@@ -73,7 +73,25 @@ pub fn run(args: Config) -> MyResult<()> {
     for filename in args.files {
         match open(&filename) {
             Err(e) => eprintln!("{}: {}", filename, e),
-            Ok(_) => println!("Opened {}", filename),
+            Ok(mut file) => {
+                if let Some(bytes) = args.bytes {
+                    let mut handle = file.take(bytes as u64);
+                    let mut buffer = vec![0; bytes];
+                    let bytes_read = handle.read(&mut buffer)?;
+                    print!("{}", String::from_utf8_lossy(&buffer[..bytes_read]));
+                } else {
+                    let mut line = String::new();
+                    for _ in 0..args.lines {
+                        let bytes = file.read_line(&mut line)?;
+
+                        if bytes == 0 {
+                            break;
+                        }
+                        print!("{}", line);
+                        line.clear();
+                    }
+                }
+            }
         }
     }
     Ok(())
